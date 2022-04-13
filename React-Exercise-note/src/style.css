@@ -1,0 +1,15 @@
+.app__wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.functions__wrapper {
+  border: 2px solid blue;
+  width: 50%;
+}
+
+.selector__wrapper {
+  border: 2px solid red;
+  width: 50%;
+}

@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { render } from 'react-dom';
+import FunctionSelector from './page/FunctionSelector';
+import MotionCounter from './page/MotionCounter';
+import './style.css';
+import React, { useState } from 'react';
 
 function App() {
+  const [list, setList]:any[] = useState([]);
+  const saveList = (motion:string, times:number) => {
+    console.log(motion, times);
+    setList([
+      ...list,
+      {
+        motion: motion,
+        times: times,
+      },
+    ]);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app__wrapper">
+      <div className="functions__wrapper">
+        <FunctionSelector />
+      </div>
+      <div className="selector__wrapper">
+        <MotionCounter saveList={saveList} />
+        <span>
+          {list.map((i:any) => (
+            <div>
+              {i.motion} : {i.times}
+            </div>
+          ))}
+        </span>
+      </div>
     </div>
   );
 }
 
 export default App;
+
+render(<App />, document.getElementById('root'));
