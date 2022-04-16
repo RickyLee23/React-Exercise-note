@@ -1,4 +1,3 @@
-import { render } from 'react-dom';
 import FunctionSelector from './page/FunctionSelector';
 import MotionCounter from './page/MotionCounter';
 import './style.css';
@@ -37,5 +36,3 @@ function App() {
 }
 
 export default App;
-
-render(<App />, document.getElementById('root'));

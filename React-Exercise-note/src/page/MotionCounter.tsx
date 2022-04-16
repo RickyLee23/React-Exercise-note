@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './MotionCounter.css';
+import { exerciseBodyPart, exerciseItem } from '../mockData/exerciseItem';
 
 function MotionSelector(props:any) {
+  const [isStart, setIsStart] = useState(false)
   const [times, setTimes] = useState(0);
   const [motion, setMotion] = useState('');
+  const [filterItem, setFilterItem] = useState('');
+  const inputMotionRef:any = useRef();
+
   const handleTimesAdjust = (action:any, amount:any) => {
     switch (action) {
       case 'plus':
@@ -16,33 +21,75 @@ function MotionSelector(props:any) {
   };
 
   const finishThisSet = () => {
+    if (!motion || times === 0) { return };
     props.saveList(motion, times);
   };
 
+  const startThisSet = () => {
+    if (!motion || !times) { return }
+    setIsStart(true)
+  }
+
   const startNextSet = () => {
-    setMotion('');
-    setTimes(0);
+    clearUserSetting()
+    setIsStart(false)
   };
+
+  const handleMotionFilter = (motionInfos:any) => {
+    setMotion('')
+    setFilterItem(motionInfos)
+    inputMotionRef.current = ''
+  }
+
+  const clearUserSetting = () => {
+    setTimes(0);
+    setFilterItem('')
+    setMotion('')
+    inputMotionRef.current = ''
+  }
+
+  const getExerciseItem = () => {
+    if (!filterItem) {
+      return exerciseItem
+    }
+    return exerciseItem.filter(item => item.bodyPart === filterItem)
+  }
 
   return (
     <div className="selector__wrapper__main">
       <fieldset>
         <label>
-          動作：
+        動作：
+          <select
+            id="bodyPart"
+            name="bodyPart"
+            value={filterItem}
+            onChange={(e) => handleMotionFilter(e.target.value)}>
+            <option value=""></option>
+            {
+              Object.keys(exerciseBodyPart).filter(
+                key => Number.isNaN(Number(key))).map(
+                (item, index) => <option key={index} >{item}</option>
+              )
+            }
+          </select>
           <select
             id="motion"
             name="motion"
+            ref={inputMotionRef}
+            value={motion}
             onChange={(e) => setMotion(e.target.value)}
           >
             <option value=""></option>
-            <option value="臥推">臥推</option>
-            <option value="深蹲">深蹲</option>
-            <option value="硬舉">硬舉</option>
+            {
+              getExerciseItem().map(
+                (item, index) => <option key={index} value={item.name}>{item.name}</option>
+              )
+            }
           </select>
         </label>
       </fieldset>
       <fieldset>
-        <label>
           次數：
           {times}
           <div>
@@ -63,18 +110,20 @@ function MotionSelector(props:any) {
               minus10
             </button>
           </div>
-        </label>
       </fieldset>
       <fieldset>
-        <input type="submit" value="開始運動" />
-        <input type="submit" value="完成此組" onClick={() => finishThisSet()} />
+        {
+          !isStart && <input type="submit" value="開始運動" onClick={() => startThisSet()}/>
+        }
+        {
+          isStart && <input type="submit" value="完成此組" onClick={() => finishThisSet()} />
+        }
         <input type="submit" value="下個動作" onClick={() => startNextSet()} />
       </fieldset>
     </div>
   );
 }
 
-// 整個動作結束 -> 使用者點選 完成動作
 export default (props:any) => {
   return (
     <div>
